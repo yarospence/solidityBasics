@@ -1,42 +1,47 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8; // dashes is for comments   
+//SPDX-License-Identifier: MIT
 
-//EVM, Ehthereum Virtual Machine
-//Avalanche, Fantom, Polygon  (other blockchains we can work on)
+pragma solidity ^0.8.0; // different versions of solidity 
 
-contract SimpleStorage {
+contract SimpleStorage{ //contract is similair to a class.
 
-    // This gets initialized to zero!
-    // <- This means that this section is a comment!
-    //uint, int, bool, string, address, bytes
-    uint256 favoriteNumber;
+    uint256 public favoriteNumber; 
+    //public returns the value of 'favoriteNumber'
+    //add {} to let solidity know to grab from the struct
 
-    //mapping resets all the numbers directly to 0 
-    //dictionaries 
-    mapping (string => uint256) public nameToFavoriteNumber;
+    mapping(string => uint256) public nameToFavoriteNumber;
+    //string is bing mapped to the uint256 number
 
     struct People{
         uint256 favoriteNumber;
-        string name;
+        string name; //strings are secretly arrays 
     }
-    //this is the setup for array 
-   // uint256[] public favoriteNumbersList;
+
+    //[] is an array is a way to store a list 
+    //uint256[] public favoriteNumberList;
     People[] public people;
-
-    //store can hold basic numbers
-    function store(uint256 _favoriteNumber) public {
-        favoriteNumber = _favoriteNumber; 
-        retrieve();
+    //[] is dynamic but [3] limits us to storing 3 names
+    // 0: 2, Patrick, 1: 7, John, 2: 32, Spencer
+    
+    function store(uint256 _favoriteNumber) public{
+        favoriteNumber = _favoriteNumber;
     }
-    // view, pure...dont allow modification on the stsate of the blockchain
-    function retrieve() public view returns(uint256){
-        return favoriteNumber; 
-    }
-
-    //pay attention to Capitalize letters grabs Capitalized text
-    // calldata, memory, storage. string is secretly an array so we must use "memory" 
+    //calldata (temp variable cant mod), memory (temp variable can mod), storage (perm that can be mod)
     function addPerson(string memory _name, uint256 _favoriteNumber) public {
         people.push(People(_favoriteNumber, _name));
-        nameToFavoriteNumber[_name] =_favoriteNumber;
+        nameToFavoriteNumber[_name] = _favoriteNumber;
     }
-}
+
+
+    // view, pure disallows the modification of state
+    //view functions disallow update 
+    function retrieve() public view returns (uint256){
+        return favoriteNumber;
+    }
+
+} 
+
+//0xd9145CCE52D386f254917e481eB44e9943F39138 
+//more things in your function the more gas is required
+//type, the visibility, and the varible name of the object is the structure. 
+//arrays, structs, and mappings and special types 
+//mapping is sort of like a dictionary 
