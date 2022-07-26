@@ -45,3 +45,4 @@ contract SimpleStorage{ //contract is similair to a class.
 //type, the visibility, and the varible name of the object is the structure. 
 //arrays, structs, and mappings and special types 
 //mapping is sort of like a dictionary 
+//0x01100c70af7bb1264Ec70250b4BbEf1128200d8a contract address on Kovan Testnet
