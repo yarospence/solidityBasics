@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-contract HoodVendingMachine { //Introducing the vry first hood vending machine on blockchain
+contract HoodVendingMachine { //Introducing the very first hood vending machine on blockchain
     address public owner;
     mapping (address => uint) public donutBalances;
 
