@@ -2,43 +2,57 @@
 //withdraw funds
 //set a minimum funding value in USD
 
-//SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT 
+
 pragma solidity ^0.8.0;
 
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "./PriceConverter.sol";
 
 contract FundMe {
-    uint256 public miminimumUsd = 50;
+    using PriceConverter for uint256;
+
+    uint256 public minimumUsd = 50 * 1e18; //this is not gas efficient
+
+    address[] public funders; //donations and contributors 
+    mapping(address => uint256) public addressToAmountFunded; //how much each person sent
+
+    address public owner;
+
+    constructor(){ //function that gets called immediately once called
+        owner = msg.sender;
+    }
+     modifier onlyOwner {
+        require(msg.sender == owner, "This aint yo money bruh!");
+        _; //doing the rest of the code, doing this require statement first
+     }
 
     function fund() public payable {
-        require(msg.value.getConversionRate() >= Mininmum_USD, "You need to spend more ETH!");
-        //1e18 == 1 * 10 ** 18 == 1000000000000000000 
-        //revert is when a gas is spent, reverse tranactions
+        //msg.value.getConversionRate();
+        require(msg.value.getConversionRate() >= minimumUsd, "You aint got it dawg"); //1e18 = 1* 10 ** 18 ==1000000000000000000 
+        funders.push(msg.sender);
+        addressToAmountFunded[msg.sender] += msg.value;
     }
 
-    function getPrice() public view returns(uint256) {
-         //ABI 
-        //address from data.chain.link
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
-        (, int256 price,,,) = priceFeed.latestRoundData();
-       // (uint80 roundID int price uint startedAt, uint timeStamp, uint80 answeredInRound) = priceFeed.latestRoundData();
-       //ETH in terms of USD theyre are 8 decimals places in terms in Ether
-       return uint256(price * 1e10); // 1 * 10 == 10000000000
+    function withdraw() public { //for = loop [a,b,c,d]
+        /* starting index, ending index, step amount */ //this is another way to comment
+        for(uint256 funderIndex = 0; funderIndex < funders.length; funderIndex = funderIndex++){
+            //code '++' means +1 
+            address funder = funders[funderIndex];
+            addressToAmountFunded[funder] = 0;
+        }
     }
-    
-    function getVersion() public view returns (uint256) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
-        return priceFeed.version();
-    }
+    //reset the array and actually withdraw the funds
+    //funders = new address[](0);
 
+    //transfer
+    //payable(msg.sender).transfer(address(this).balance); //payable(msg.sender).transfer(address(this).balance);
 
-    function getConversionRate(uint256 ethAmount) public view returns (uint256) {
-        uint256 ethPrice = getPrice();
-        // 3000_000000000000000000 = ETH / USD price
-        //1_000000000000000000 ETH
-        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
-        return ethAmountInUsd;
-    }
+    //send
+    //bool sendSuccess = payable(msg.sender).send(address(this).balance);
+    //require(sendSuccess, "Send Failed");
 
-    //function withdraw(){}
+    //call
+    //(bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
+    //require(callSuccess, "Call Failed");
+
 }
